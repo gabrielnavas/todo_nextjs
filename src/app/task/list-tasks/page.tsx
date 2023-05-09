@@ -2,6 +2,10 @@
 
 import { useEffect, useState } from "react"
 
+import styles from './page.module.css'
+
+import TaskItem from './task-item'
+
 type TaskStatus = {
   id: string
   name: string
@@ -10,7 +14,7 @@ type TaskStatus = {
 type Task = {
   id: string
   description: string
-  creadtedAt: Date
+  createdAt: Date
   updatedAt: Date
   status: TaskStatus
 }
@@ -28,6 +32,8 @@ const ListTasks = () => {
     const body = await response.json()
     const tasks = body.tasks
     setTasks(tasks)
+    console.log(tasks);
+    
   }
 
   useEffect(() => {
@@ -37,10 +43,14 @@ const ListTasks = () => {
   }, [])
   
   return (
-    <div>
-      <ul>
+    <div className={styles.container}>
+      <ul  className={styles.tasks_list}>
         {
-          tasks.map((task: Task) => <li key={task.id}>{task.description}</li>)
+          tasks.map((task: Task) => (
+            <TaskItem
+              key={task.id} 
+              task={task} />
+          ))
         }
       </ul>
     </div>

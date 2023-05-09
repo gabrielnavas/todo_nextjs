@@ -1,0 +1,10 @@
+.container {
+  display: flex;
+  justify-content: center;
+  padding-top: 50px;
+  min-height: 100vh;
+}
+
+.tasks_list {
+  max-width: 750px;
+}

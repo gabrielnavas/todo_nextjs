@@ -1,14 +1,40 @@
 'use client'
+import { useEffect, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
 import styles from './page.module.css'
-import { useState } from 'react';
+
+export const statusTypeName = {
+	TASK_STATUS_TODO: "todo",
+	TASK_STATUS_DOING: "doing",
+	TASK_STATUS_FINISH: "finish"
+}
+
+export type Status = {
+  id: string
+  name: string
+}
+
+export type Task = {
+  id: string 
+  description: string 
+  createdAt: Date 
+  updatedAt: Date 
+  status: Status 
+}
 
 const NewTask = () => {
   const [taskName, setTaskName] = useState("")
-
+  const [taskToUpdate, setTaskToUpdate] = useState<Task | null>(null)
   const router = useRouter();
+
+  useEffect(() => {
+    const taskStr = localStorage.getItem('task')
+    if(taskStr) {
+      setTaskToUpdate(JSON.parse(taskStr))
+    }
+  }, [])
 
   const handleCreateTask = async () => {
     const payload = {
@@ -26,7 +52,7 @@ const NewTask = () => {
   }
 
   return (
-    <section className={styles.page}>
+    <div className={styles.page}>
       <div className={styles.card}>
         <form className={styles.form}>
           <div className={styles.form_group}>
@@ -37,7 +63,7 @@ const NewTask = () => {
           <button type="button" className={`${styles.form_button} ${styles.form_button_cancel}`} onClick={() => router.back()}>Voltar</button>
         </form>
       </div>
-    </section>
+    </div>
   )
 }
 
