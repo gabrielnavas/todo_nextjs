@@ -18,6 +18,8 @@ export type Status = {
   name: string
 }
 
+type StatusSelected = "now" | "toUpdate"
+
 export type Task = {
   id: string 
   description: string 
@@ -28,44 +30,67 @@ export type Task = {
 
 const UpdateTask = () => {
   const [taskToUpdate, setTaskToUpdate] = useState<Task | null>(null)
+
+  const [description, setDescription] = useState("")
+
+  const [statusSelected, setStatusSelected] = useState<StatusSelected>("now")
+
+  const [statusToUpdate, setStatusToUpdate] = useState<string>("")
+  const [statusNow, setStatusNow] = useState<string>("")
+
+  const [statusNowRender, setStatusNowRender] = useState<string>("")
+  const [statusToUpdateRender, setStatusToUpdateRender] = useState<string>("")
+
+
+  
   const router = useRouter();
 
-  const [statusColor, setStatusColor] = useState("")
-
-  let iconStatus: JSX.Element | null = null
-
   useEffect(() => {
+
     const taskStr = localStorage.getItem('task')
     if(taskStr) {
-      setTaskToUpdate(JSON.parse(taskStr))
-      if(taskToUpdate?.status.name == statusTypeName.TASK_STATUS_TODO) {
-        setStatusColor('#2cae53')
-        iconStatus = <AiOutlineArrowUp color='#2cae53' />
+      const task: Task = JSON.parse(taskStr)
+      setTaskToUpdate(task)
+      setDescription(task.description)
+
+      if(task.status.name === statusTypeName.TASK_STATUS_TODO) {
+        setStatusNowRender("A fazer")
+        setStatusToUpdateRender("Fazendo")
+        setStatusToUpdate(statusTypeName.TASK_STATUS_DOING)
+        setStatusNow(statusTypeName.TASK_STATUS_TODO)
       }
-      if(taskToUpdate?.status.name == statusTypeName.TASK_STATUS_DOING) {
-        setStatusColor('#db2a2a')
-        iconStatus = <AiOutlineCheckCircle color='#db2a2a' />
+      else if(task.status.name === statusTypeName.TASK_STATUS_DOING) {
+        setStatusNowRender("Fazendo")
+        setStatusToUpdateRender("Finalizado")
+        setStatusToUpdate(statusTypeName.TASK_STATUS_FINISH)
+        setStatusNow(statusTypeName.TASK_STATUS_DOING)
       }
-      if(taskToUpdate?.status.name == statusTypeName.TASK_STATUS_FINISH) {
-        setStatusColor('#7C7C7C')
-        iconStatus = <AiOutlineCloseCircle color='#7C7C7C' />
+      else if(task.status.name === statusTypeName.TASK_STATUS_FINISH) {
+        setStatusNowRender("Finalizado")
+        setStatusToUpdateRender("Fazendo")
+        setStatusToUpdate(statusTypeName.TASK_STATUS_DOING)
+        setStatusNow(statusTypeName.TASK_STATUS_FINISH)
       }
     }
   }, [])
 
-  const handleCreateTask = async () => {
+  const handleUpdateTask = async () => {
+
     const payload = {
-      description: taskToUpdate?.description
+      description,
+      statusName: statusSelected === "now" ? statusNow : statusToUpdate
     }
-    const response = await fetch('http://localhost:8080/task', {
-      method: 'POST',
+    const response = await fetch('http://localhost:8080', {
+      method: 'PUT',
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },  
       body: JSON.stringify(payload),
     })
-    router.back()    
+    if(response.status >= 200 && response.status < 400) {
+      router.back()    
+    }
   }
 
   return (
@@ -78,34 +103,34 @@ const UpdateTask = () => {
           <div className={styles.form_group}>
             <label className={styles.form_label}>Descrição</label>
             <textarea 
+              id="description"
               className={styles.form_description} 
-              value={taskToUpdate?.description} 
-              onChange={e => setTaskToUpdate(taskToUpdate && {...taskToUpdate, description: e.target.value})}></textarea>
+              value={description} 
+              onChange={e => setDescription(e.target.value)}
+            ></textarea>
           </div>
           <div className={styles.form_group}>
-            <label className={styles.form_label}>Alterar status</label>
-            <div className={styles.button_status_container}>
-              <button className={styles.button_status}>
-                <span className={styles.button_status_icon}>
-                  {iconStatus}
-                </span>
-                <span className={styles.button_status_text} style={{
-                  color: statusColor
-                }}>
-                  {taskToUpdate?.status.name}
-                </span>
-              </button>
+          <label className={styles.form_label}>Status</label>
+          <div className={styles.status_container}>
+            <div className={styles.radio_group}>
+              <input type='radio' name="status" value="status_now" className={styles.status_container_radio} checked={statusSelected === "now"} onChange={() => setStatusSelected("now")} />
+              <label htmlFor='status_now' className={styles.status_container_label} onClick={() => setStatusSelected("now")}>Status atual: {statusNowRender}</label>
             </div>
+            <div className={styles.radio_group}>
+              <input type='radio' name="status" value="status_to_update" className={styles.status_container_radio} checked={statusSelected === "toUpdate"} onChange={() => setStatusSelected("toUpdate")} />
+              <label htmlFor="status_to_update" className={styles.status_container_label} onClick={() => setStatusSelected("toUpdate")}>Alterar para: {statusToUpdateRender}</label>
+            </div>
+          </div>
           </div>
           <div className={styles.left_dates}>
             <span className={styles.date}>
-              Criado em {formatDistanceToNow(new Date(Date.now() - 50000))}
+              Criado em { taskToUpdate && formatDistanceToNow(new Date(taskToUpdate.createdAt)) }
             </span>
             <span className={styles.date}>
-              Atualizado em {formatDistanceToNow(new Date(Date.now() - 50000))}
+              Atualizado em { taskToUpdate && formatDistanceToNow(new Date(taskToUpdate.updatedAt))}
             </span>
           </div>
-          <button type="button" className={`${styles.form_button} ${styles.form_button_confirm}`} onClick={handleCreateTask}>Adicionar task</button>
+          <button type="button" className={`${styles.form_button} ${styles.form_button_confirm}`} onClick={handleUpdateTask}>Atualizar</button>
           <button type="button" className={`${styles.form_button} ${styles.form_button_cancel}`} onClick={() => router.back()}>Voltar</button>
         </form>
       </div>
