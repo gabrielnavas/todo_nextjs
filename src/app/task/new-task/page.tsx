@@ -48,7 +48,13 @@ const NewTask = () => {
       },  
       body: JSON.stringify(payload),
     })
-    router.back()    
+    if(response.status >= 200 && response.status < 299) {
+      router.back()    
+    }
+    else if(response.status >= 400 && response.status <= 499) {
+      const body = await response.json()
+      alert(body.message)
+    }   
   }
 
   return (
