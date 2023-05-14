@@ -14,18 +14,18 @@ import {
   AiOutlineClose
 } from 'react-icons/ai';
 
-export const statusTypeName = {
+const statusTypeName = {
 	TASK_STATUS_TODO: "todo",
 	TASK_STATUS_DOING: "doing",
 	TASK_STATUS_FINISH: "finish"
 }
 
-export type Status = {
+type Status = {
   id: string
   name: string
 }
 
-export type Task = {
+type Task = {
   id: string 
   description: string 
   createdAt: Date 
@@ -33,9 +33,9 @@ export type Task = {
   status: Status 
 }
 
-
 type Props = {
   task: Task
+  handleLoadTasks: () => void
 }
 
 const TaskListItem = (props: Props) => {
@@ -60,17 +60,29 @@ const TaskListItem = (props: Props) => {
     }
   }, [])
 
-  const handlerClickOnItem = () => {
-    console.log(JSON.stringify(props.task));
+  const handleClickOnButtonEditItem = () => {
     localStorage.setItem('task', JSON.stringify(props.task))
     router.push('/task/update-task')
   }
 
+  const handleOnClickButtonDeleteItem = async () => {
+    const response = await fetch(`http://localhost:8080/task/${props.task.id}`, {
+      method: 'DELETE',
+      headers: {
+        Accept: "application/json",
+      },
+    }) 
+    if(response.status >= 200 && response.status <= 299) {
+      props.handleLoadTasks()
+      return
+    }
+    const body = await response.json()
+    alert(body.message)
+  }
 
   return (
-    <li className={styles.container} 
-      onClick={() => handlerClickOnItem()}>
-      <div className={styles.left}>
+    <li className={styles.container}>
+      <div className={styles.left} onClick={() => handleClickOnButtonEditItem()}>
       <span className={styles.description}>{props.task.description}</span>
       <div className={styles.left_dates}>
         <span className={styles.date}>
@@ -92,7 +104,7 @@ const TaskListItem = (props: Props) => {
             {props.task.status.name}
           </span>
         </button>
-        <button className={`${styles.button} ${styles.button_delete}`}>
+        <button className={`${styles.button} ${styles.button_delete}`} onClick={handleOnClickButtonDeleteItem}>
           <span className={styles.button_icon}>
             <AiOutlineClose color='#db2a2a'/>
           </span>
