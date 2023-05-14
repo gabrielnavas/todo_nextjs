@@ -26,10 +26,17 @@ const TasksList = () => {
       },
     }) 
     const body = await response.json()
-    const tasks = body.tasks
+    const tasks = body.tasks.map((task: any) => ({
+      id: task.id,
+      description: task.description,
+      createdAt: new Date(task.createdAt),
+      updatedAt: new Date(task.updatedAt),
+      status: {
+        id: task.status.id,
+        name: task.status.name,
+      }
+    }))
     setTasks(tasks)
-    console.log(tasks);
-    
   }
 
   useEffect(() => {

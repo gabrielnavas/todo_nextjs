@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import styles from './task-list-item.module.css'
 
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
+import { ptBR } from 'date-fns/locale';
 
 import { 
   AiOutlineArrowUp, 
@@ -73,10 +74,10 @@ const TaskListItem = (props: Props) => {
       <span className={styles.description}>{props.task.description}</span>
       <div className={styles.left_dates}>
         <span className={styles.date}>
-          Criado em {formatDistanceToNow(new Date(Date.now() - 50000))}
+          Criado há {formatDistanceToNow(props.task.createdAt, { locale: ptBR })}
         </span>
         <span className={styles.date}>
-          Atualizado em {formatDistanceToNow(new Date(Date.now() - 50000))}
+          Atualizado há {formatDistanceToNow(props.task.updatedAt, { locale: ptBR })}
         </span>
       </div>
       </div>
