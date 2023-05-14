@@ -2,11 +2,15 @@ import { useEffect, useState } from 'react'
 
 import { useRouter } from 'next/navigation';
 
-import styles from './task-item.module.css'
+import styles from './task-list-item.module.css'
 
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 
-import { AiOutlineArrowUp, AiOutlineCheckCircle, AiOutlineCloseCircle } from 'react-icons/ai';
+import { 
+  AiOutlineArrowUp, 
+  AiOutlineCheckCircle, 
+  AiOutlineCloseCircle
+} from 'react-icons/ai';
 
 export const statusTypeName = {
 	TASK_STATUS_TODO: "todo",
@@ -32,7 +36,7 @@ type Props = {
   task: Task
 }
 
-const TaskItem = (props: Props) => {
+const TaskListItem = (props: Props) => {
   
   const [statusColor, setStatusColor] = useState("")
   const router = useRouter();
@@ -91,4 +95,4 @@ const TaskItem = (props: Props) => {
   )
 }
 
-export default TaskItem
+export default TaskListItem
