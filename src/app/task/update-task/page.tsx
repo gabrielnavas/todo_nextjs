@@ -78,9 +78,11 @@ const UpdateTask = () => {
 
     const payload = {
       description,
-      statusName: statusSelected === "now" ? statusNow : statusToUpdate
+      status: {
+        name: statusSelected === "now" ? statusNow : statusToUpdate 
+      }
     }
-    const response = await fetch('http://localhost:8080', {
+    const response = await fetch(`http://localhost:8080/task/${taskToUpdate.id}`, {
       method: 'PUT',
       headers: {
         Accept: "application/json",
@@ -88,8 +90,12 @@ const UpdateTask = () => {
       },  
       body: JSON.stringify(payload),
     })
-    if(response.status >= 200 && response.status < 400) {
+    if(response.status >= 200 && response.status < 299) {
       router.back()    
+    }
+    else if(response.status >= 400 && response.status <= 499) {
+      const body = await response.json()
+      alert(body.message)
     }
   }
 
