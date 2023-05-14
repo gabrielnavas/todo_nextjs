@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 
 import TaskListItem from './task-list-item'
 import styles from './tasks-list.module.css'
+import TaskListItemEmpty from './task-list-item-empty'
 
 type TaskStatus = {
   id: string
@@ -46,11 +47,18 @@ const TasksList = () => {
   return (
     <ul className={styles.container}>
       {
-        tasks.map((task: Task) => (
-          <TaskListItem
-            key={task.id} 
-            task={task} />
-        ))
+        tasks.length === 0 ? (
+          <TaskListItemEmpty />
+        ) : (
+          tasks.length > 0 &&(
+            tasks.map((task: Task) => (
+              <TaskListItem
+                key={task.id}
+                handleLoadTasks={() => handleLoadTasks()} 
+                task={task} />
+            ))
+          )
+        )
       }
     </ul>
   )
