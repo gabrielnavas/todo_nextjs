@@ -2,17 +2,19 @@
   display: flex;
   padding: 2.5px 5px 2.5px 5px;
   width: 100%;
-  transition: all 300ms ease-in-out;
   cursor: pointer;
 }
 
-.container:hover {
-  scale: 1.02;
-}
 
 .left {
   background-color: var(--color-white);
-  width: 85%;
+  width: 80%;
+  transition: all 300ms ease-in-out;
+  border: 1px dashed #0000;
+}
+.left:hover {
+  border: 1px dashed var(--color-gray);
+  scale: 1.02;
 }
 
 
@@ -47,8 +49,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: blue;
-  width: 15%;
+  background-color: #0000;
+  width: 20%;
 }
 
 .button {
@@ -56,11 +58,16 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100%;
-  width: 100%;
+  height: 95%;
+  width: 75%;
   cursor: pointer;
   outline: none;
   border: 0.3px solid var(--color-gunmetal);
+  margin: 4px 2px;
+  transition: all 100ms ease-in-out;
+}
+.button:hover {
+  scale: 1.02;
 }
 
 .button_icon {
@@ -71,4 +78,15 @@
 .button_text {
   font-weight: bold;
   font-size: .7rem;
+}
+
+.button_delete {
+  border: 1px solid #0000;
+}
+.button_delete:hover {
+  border: 1px solid var(--color-red);
+}
+
+.button_delete_text {
+  color: var(--color-red);
 }

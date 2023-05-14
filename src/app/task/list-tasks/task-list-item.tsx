@@ -9,7 +9,8 @@ import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 import { 
   AiOutlineArrowUp, 
   AiOutlineCheckCircle, 
-  AiOutlineCloseCircle
+  AiOutlineCloseCircle,
+  AiOutlineClose
 } from 'react-icons/ai';
 
 export const statusTypeName = {
@@ -39,22 +40,22 @@ type Props = {
 const TaskListItem = (props: Props) => {
   
   const [statusColor, setStatusColor] = useState("")
+  const [iconStatus, setIconStatus] = useState<JSX.Element | null>(null)
+  
   const router = useRouter();
-
-  let iconStatus: JSX.Element | null = null
 
   useEffect(() => {
     if(props.task.status.name == statusTypeName.TASK_STATUS_TODO) {
       setStatusColor('#2cae53')
-      iconStatus = <AiOutlineArrowUp color='#2cae53' />
+      setIconStatus(<AiOutlineArrowUp color='#2cae53' />)
     }
     if(props.task.status.name == statusTypeName.TASK_STATUS_DOING) {
       setStatusColor('#db2a2a')
-      iconStatus = <AiOutlineCheckCircle color='#db2a2a' />
+      setIconStatus(<AiOutlineCheckCircle color='#db2a2a' />)
     }
     if(props.task.status.name == statusTypeName.TASK_STATUS_FINISH) {
       setStatusColor('#7C7C7C')
-      iconStatus = <AiOutlineCloseCircle color='#7C7C7C' />
+      setIconStatus(<AiOutlineCloseCircle color='#7C7C7C' />)
     }
   }, [])
 
@@ -80,14 +81,22 @@ const TaskListItem = (props: Props) => {
       </div>
       </div>
       <div className={styles.right}>
-        <button className={styles.button}>
+        <button className={styles.button} style={{}}>
           <span className={styles.button_icon}>
-            <AiOutlineArrowUp color={statusColor} />
+            {iconStatus}
           </span>
           <span className={styles.button_text} style={{
             color: statusColor
           }}>
             {props.task.status.name}
+          </span>
+        </button>
+        <button className={`${styles.button} ${styles.button_delete}`}>
+          <span className={styles.button_icon}>
+            <AiOutlineClose color='#db2a2a'/>
+          </span>
+          <span className={styles.button_delete_text}>
+            Remover
           </span>
         </button>
       </div>
