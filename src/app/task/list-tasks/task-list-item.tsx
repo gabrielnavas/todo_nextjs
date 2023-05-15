@@ -2,10 +2,13 @@ import { useEffect, useState } from 'react'
 
 import { useRouter } from 'next/navigation';
 
+import { ptBR } from 'date-fns/locale';
+
+import Modal from 'react-modal'
+
 import styles from './task-list-item.module.css'
 
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
-import { ptBR } from 'date-fns/locale';
 
 import { 
   AiOutlineArrowUp, 
@@ -43,6 +46,8 @@ const TaskListItem = (props: Props) => {
   const [statusColor, setStatusColor] = useState("")
   const [iconStatus, setIconStatus] = useState<JSX.Element | null>(null)
   
+  const [modalIsOpen, setModalIsOpen] = useState(false)
+
   const router = useRouter();
 
   useEffect(() => {
@@ -65,7 +70,7 @@ const TaskListItem = (props: Props) => {
     router.push('/task/update-task')
   }
 
-  const handleOnClickButtonDeleteItem = async () => {
+  const handleRequestOnDeleteItem = async () => {
     const response = await fetch(`http://localhost:8080/task/${props.task.id}`, {
       method: 'DELETE',
       headers: {
@@ -73,11 +78,28 @@ const TaskListItem = (props: Props) => {
       },
     }) 
     if(response.status >= 200 && response.status <= 299) {
-      props.handleLoadTasks()
-      return
+      return null
     }
     const body = await response.json()
-    alert(body.message)
+    return body.message
+  }
+
+  const handleToggleModal = () => {
+    setModalIsOpen(!modalIsOpen)
+  }
+
+  const handleConfirmDeleteItem = async () => {
+    const errorMessage = await handleRequestOnDeleteItem()
+    if(errorMessage) {
+      alert(errorMessage)
+      return
+    } 
+    props.handleLoadTasks()
+    handleToggleModal()
+  }
+
+  const handleCancelDeleteItem = () => {
+    handleToggleModal()
   }
 
   return (
@@ -104,7 +126,7 @@ const TaskListItem = (props: Props) => {
             {props.task.status.name}
           </span>
         </button>
-        <button className={`${styles.button} ${styles.button_delete}`} onClick={handleOnClickButtonDeleteItem}>
+        <button className={`${styles.button} ${styles.button_delete}`} onClick={handleToggleModal}>
           <span className={styles.button_icon}>
             <AiOutlineClose color='#db2a2a'/>
           </span>
@@ -112,6 +134,17 @@ const TaskListItem = (props: Props) => {
             Remover
           </span>
         </button>
+        <Modal
+          isOpen={modalIsOpen}
+          onRequestClose={handleToggleModal}
+          contentLabel="Modal de exemplo"
+          className={styles.modal_container}
+        >
+          <h2>Olá</h2>
+          <button onClick={handleConfirmDeleteItem}>Confirmar</button>
+          <button onClick={handleCancelDeleteItem}>Fechar</button>
+          <div>Eu sou uma modal</div>
+        </Modal>
       </div>
     </li>
   )

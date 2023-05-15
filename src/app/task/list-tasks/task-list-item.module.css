@@ -90,3 +90,7 @@
 .button_delete_text {
   color: var(--color-red);
 }
+
+.modal_container {
+  inset: 20% 10%
+}
