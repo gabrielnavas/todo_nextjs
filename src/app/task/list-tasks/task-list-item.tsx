@@ -4,10 +4,6 @@ import { useRouter } from 'next/navigation';
 
 import { ptBR } from 'date-fns/locale';
 
-import Modal from 'react-modal'
-
-import styles from './task-list-item.module.css'
-
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 
 import { 
@@ -16,6 +12,10 @@ import {
   AiOutlineCloseCircle,
   AiOutlineClose
 } from 'react-icons/ai';
+
+import styles from './task-list-item.module.css'
+
+import ModalDeleteItemList from './modal-delete-list-item';
 
 const statusTypeName = {
 	TASK_STATUS_TODO: "todo",
@@ -134,17 +134,12 @@ const TaskListItem = (props: Props) => {
             Remover
           </span>
         </button>
-        <Modal
+        <ModalDeleteItemList 
           isOpen={modalIsOpen}
           onRequestClose={handleToggleModal}
-          contentLabel="Modal de exemplo"
-          className={styles.modal_container}
-        >
-          <h2>Olá</h2>
-          <button onClick={handleConfirmDeleteItem}>Confirmar</button>
-          <button onClick={handleCancelDeleteItem}>Fechar</button>
-          <div>Eu sou uma modal</div>
-        </Modal>
+          cancelDeleteItem={handleCancelDeleteItem}
+          confirmDeleteItem={handleConfirmDeleteItem}
+        />
       </div>
     </li>
   )
