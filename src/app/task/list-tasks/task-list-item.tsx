@@ -1,17 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import { useRouter } from 'next/navigation';
 
 import { ptBR } from 'date-fns/locale';
-
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 
-import { 
-  AiOutlineArrowUp, 
-  AiOutlineCheckCircle, 
-  AiOutlineCloseCircle,
-  AiOutlineClose
-} from 'react-icons/ai';
+import { AiOutlineClose } from 'react-icons/ai';
+import { GrUpdate } from 'react-icons/gr'
 
 import styles from './task-list-item.module.css'
 
@@ -42,28 +37,9 @@ type Props = {
 }
 
 const TaskListItem = (props: Props) => {
-  
-  const [statusColor, setStatusColor] = useState("")
-  const [iconStatus, setIconStatus] = useState<JSX.Element | null>(null)
-  
-  const [modalIsOpen, setModalIsOpen] = useState(false)
+  const [modalRemoveIsOpen, setModalRemoveIsOpen] = useState(false)
 
   const router = useRouter();
-
-  useEffect(() => {
-    if(props.task.status.name == statusTypeName.TASK_STATUS_TODO) {
-      setStatusColor('#2cae53')
-      setIconStatus(<AiOutlineArrowUp color='#2cae53' />)
-    }
-    if(props.task.status.name == statusTypeName.TASK_STATUS_DOING) {
-      setStatusColor('#db2a2a')
-      setIconStatus(<AiOutlineCheckCircle color='#db2a2a' />)
-    }
-    if(props.task.status.name == statusTypeName.TASK_STATUS_FINISH) {
-      setStatusColor('#7C7C7C')
-      setIconStatus(<AiOutlineCloseCircle color='#7C7C7C' />)
-    }
-  }, [])
 
   const handleClickOnButtonEditItem = () => {
     localStorage.setItem('task', JSON.stringify(props.task))
@@ -84,9 +60,7 @@ const TaskListItem = (props: Props) => {
     return body.message
   }
 
-  const handleToggleModal = () => {
-    setModalIsOpen(!modalIsOpen)
-  }
+  const handleToggleModal = () => setModalRemoveIsOpen(!modalRemoveIsOpen)
 
   const handleConfirmDeleteItem = async () => {
     const errorMessage = await handleRequestOnDeleteItem()
@@ -104,7 +78,7 @@ const TaskListItem = (props: Props) => {
 
   return (
     <li className={styles.container}>
-      <div className={styles.left} onClick={() => handleClickOnButtonEditItem()}>
+      <div className={styles.left}>
       <span className={styles.description}>{props.task.description}</span>
       <div className={styles.left_dates}>
         <span className={styles.date}>
@@ -116,15 +90,10 @@ const TaskListItem = (props: Props) => {
       </div>
       </div>
       <div className={styles.right}>
-        <button className={styles.button} style={{}}>
-          <span className={styles.button_icon}>
-            {iconStatus}
-          </span>
-          <span className={styles.button_text} style={{
-            color: statusColor
-          }}>
-            {props.task.status.name}
-          </span>
+        <button 
+          className={`${styles.button} ${styles.button_update}`} 
+          onClick={() => handleClickOnButtonEditItem()}>
+          <GrUpdate />
         </button>
         <button className={`${styles.button} ${styles.button_delete}`} onClick={handleToggleModal}>
           <span className={styles.button_icon}>
@@ -135,7 +104,7 @@ const TaskListItem = (props: Props) => {
           </span>
         </button>
         <ModalDeleteItemList 
-          isOpen={modalIsOpen}
+          isOpen={modalRemoveIsOpen}
           onRequestClose={handleToggleModal}
           cancelDeleteItem={handleCancelDeleteItem}
           confirmDeleteItem={handleConfirmDeleteItem}

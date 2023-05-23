@@ -1,11 +1,12 @@
 'use client'
 import { useEffect, useState } from 'react';
 
+import { ptBR } from 'date-fns/locale';
+import formatDistanceToNow from 'date-fns/formatDistanceToNow'
+
 import { useRouter } from 'next/navigation';
 
 import styles from './page.module.css'
-import formatDistanceToNow from 'date-fns/formatDistanceToNow';
-import { AiOutlineArrowUp, AiOutlineCheckCircle, AiOutlineCloseCircle } from 'react-icons/ai';
 
 export const statusTypeName = {
 	TASK_STATUS_TODO: "todo",
@@ -48,29 +49,34 @@ const UpdateTask = () => {
   useEffect(() => {
 
     const taskStr = localStorage.getItem('task')
-    if(taskStr) {
-      const task: Task = JSON.parse(taskStr)
-      setTaskToUpdate(task)
-      setDescription(task.description)
+    
+    if(!taskStr) {
+      return
+    }
+    const task: Task = JSON.parse(taskStr)
+    task.createdAt = new Date(task.createdAt)
+    task.updatedAt = new Date(task.updatedAt)
 
-      if(task.status.name === statusTypeName.TASK_STATUS_TODO) {
-        setStatusNowRender("A fazer")
-        setStatusToUpdateRender("Fazendo")
-        setStatusToUpdate(statusTypeName.TASK_STATUS_DOING)
-        setStatusNow(statusTypeName.TASK_STATUS_TODO)
-      }
-      else if(task.status.name === statusTypeName.TASK_STATUS_DOING) {
-        setStatusNowRender("Fazendo")
-        setStatusToUpdateRender("Finalizado")
-        setStatusToUpdate(statusTypeName.TASK_STATUS_FINISH)
-        setStatusNow(statusTypeName.TASK_STATUS_DOING)
-      }
-      else if(task.status.name === statusTypeName.TASK_STATUS_FINISH) {
-        setStatusNowRender("Finalizado")
-        setStatusToUpdateRender("Fazendo")
-        setStatusToUpdate(statusTypeName.TASK_STATUS_DOING)
-        setStatusNow(statusTypeName.TASK_STATUS_FINISH)
-      }
+    setTaskToUpdate(task)
+    setDescription(task.description)
+
+    if(task.status.name === statusTypeName.TASK_STATUS_TODO) {
+      setStatusNowRender("A fazer")
+      setStatusToUpdateRender("Fazendo")
+      setStatusToUpdate(statusTypeName.TASK_STATUS_DOING)
+      setStatusNow(statusTypeName.TASK_STATUS_TODO)
+    }
+    else if(task.status.name === statusTypeName.TASK_STATUS_DOING) {
+      setStatusNowRender("Fazendo")
+      setStatusToUpdateRender("Finalizado")
+      setStatusToUpdate(statusTypeName.TASK_STATUS_FINISH)
+      setStatusNow(statusTypeName.TASK_STATUS_DOING)
+    }
+    else if(task.status.name === statusTypeName.TASK_STATUS_FINISH) {
+      setStatusNowRender("Finalizado")
+      setStatusToUpdateRender("Fazendo")
+      setStatusToUpdate(statusTypeName.TASK_STATUS_DOING)
+      setStatusNow(statusTypeName.TASK_STATUS_FINISH)
     }
   }, [])
 
@@ -130,10 +136,10 @@ const UpdateTask = () => {
           </div>
           <div className={styles.left_dates}>
             <span className={styles.date}>
-              Criado em { taskToUpdate && formatDistanceToNow(new Date(taskToUpdate.createdAt)) }
+              Criado em { taskToUpdate && formatDistanceToNow(taskToUpdate.createdAt, { locale: ptBR }) }
             </span>
             <span className={styles.date}>
-              Atualizado em { taskToUpdate && formatDistanceToNow(new Date(taskToUpdate.updatedAt))}
+              Atualizado em { taskToUpdate && formatDistanceToNow(taskToUpdate.updatedAt, { locale: ptBR }) }
             </span>
           </div>
           <button type="button" className={`${styles.form_button} ${styles.form_button_confirm}`} onClick={handleUpdateTask}>Atualizar</button>

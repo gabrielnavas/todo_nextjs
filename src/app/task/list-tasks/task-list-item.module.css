@@ -2,19 +2,13 @@
   display: flex;
   padding: 2.5px 5px 2.5px 5px;
   width: 100%;
-  cursor: pointer;
 }
 
 
 .left {
   background-color: var(--color-white);
   width: 80%;
-  transition: all 300ms ease-in-out;
   border: 1px dashed #0000;
-}
-.left:hover {
-  border: 1px dashed var(--color-gray);
-  scale: 1.02;
 }
 
 
@@ -75,9 +69,8 @@
   font-size: 2rem;
 }
 
-.button_text {
-  font-weight: bold;
-  font-size: .7rem;
+.button_update > svg {
+  color: var(--color-yellow);
 }
 
 .button_delete {
